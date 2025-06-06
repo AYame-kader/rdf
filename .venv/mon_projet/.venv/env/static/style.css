@@ -1,0 +1,25 @@
+.liste-container {
+    width: 300px;
+    height: 200px; /* ✅ Hauteur limitée pour afficher 10 noms max */
+    overflow: hidden;
+    border: 2px solid black;
+    padding: 10px;
+}
+
+.liste-container:hover {
+    overflow: auto; /* 🔥 Active le scroll quand on glisse le curseur */
+}
+
+
+.liste-container {
+    scroll-behavior: smooth;
+}
+.liste-noms {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.titre{
+    background: blue;
+}

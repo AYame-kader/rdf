@@ -1,0 +1,6 @@
+nom,température,vent,charge_reseau,coupure_probable
+Pylône 1,30,10,80,0
+Pylône 2,35,15,90,1
+Pylône 3,28,5,70,0
+
+

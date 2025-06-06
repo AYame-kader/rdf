@@ -1,0 +1,27 @@
+.liste-container {
+    width: 300px;
+    height: 200px; /* ✅ Hauteur limitée pour afficher 10 noms max */
+    overflow: hidden;
+    border: 2px solid black;
+    padding: 10px;
+}
+
+.liste-container:hover {
+    overflow: auto; /* 🔥 Active le scroll quand on glisse le curseur */
+}
+.liste-container {
+    scroll-behavior: smooth;
+}
+
+.titre{
+    background: blue;
+    height: 100px;
+}
+.global{
+    display: grid;
+    grid-template-columns: auto; /* 3 colonnes ajustées automatiquement */
+    gap: 10px; /* Espacement entre les cases */
+}
+body {
+    background-size: cover;
+}

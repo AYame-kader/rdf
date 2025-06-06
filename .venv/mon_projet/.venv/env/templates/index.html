@@ -1,0 +1,152 @@
+<!DOCTYPE html UTF-8>
+<html lang="FR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title><link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styl.css') }}">
+    <link rel="stylesheet" href="styl.css">
+</head>
+<body class="global" style="margin: 0px;">
+<div class="titre" >
+        <h1 class="content" style="padding: 10px;">CAMERAS</h1>
+</div>
+
+<div class="regroup" style=" background-image: url(images/Copilot.jpg)" >
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+
+    <div style="display: flex; gap: 50px; margin: 20px">
+    <div class="liste-container", style="padding: 10px; border-radius: 10px; background: rgb(224, 221, 221); width: 50%; "> 
+        <p style=" font-family: Arial, Helvetica, sans-serif; font-size: 17px;color: black; margin-left: 150px; border-radius: 2px; background: rgb(134, 134, 135);"> Liste des Pilonnes</p>
+    <script>
+        var socket = io.connect("http://127.0.0.1:5000");
+
+        socket.on("mise_a_jour", function(etats) {
+            let table = "";
+            for (const [nom, statut] of Object.entries(etats)) {
+                let classe = statut.includes("En ligne") ? "en-ligne" : "hors-ligne";
+                table += `<tr class="${classe}"><td>${nom}</td><td>${statut}</td></tr>`;
+            }
+            document.getElementById("tableau-pylones").innerHTML = table;
+        });
+    </script>
+    <table id="tableau-pylones" style="padding: 0px; margin: 0px; list-style: none;">
+        <tr>
+            <th>Pylône</th>
+            <th>Statut</th>
+        </tr>
+    </table>
+    </div>
+
+    <div>
+        <script>
+        socket.on("mise_a_jour", function(etats) {
+            let alerteVisible = false;
+            for (const statut of Object.values(etats)) {
+                if (statut.includes("Hors ligne")) {
+                    alerteVisible = true;
+                }
+            }
+            
+            document.getElementById("alerte").style.display = alerteVisible ? "block" : "none";
+        });
+    </script>
+
+    <div>
+    <script>
+        // 📡 Connexion à Pusher
+        var pusher = new Pusher("TA_CLE_API", { cluster: "TON_CLUSTER" });
+
+        // 🔔 Écouter les notifications push
+        var channel = pusher.subscribe("alerte-channel");
+        channel.bind("pylone-hors-ligne", function(data) {
+            alert(data.message);  // Affiche une alerte pop-up
+        });
+    </script>
+    </div>
+    </div>
+
+    <div class="alerte" style=" border: 2px solid; background: beige; width: 50%; border-radius: 10px;" >
+        <div class="nom" style="font-family: Arial, Helvetica, sans-serif; color: black;">📊 Historique des Alertes</div>
+    <table>
+        <tr>
+            <th>Pylône</th>
+            <th>Statut</th>
+            <th>Date & Heure</th>
+        </tr>
+        {% for alerte in historique %}
+        <tr>
+            <td>{{ alerte.pylone }}</td>
+            <td>{{ alerte.statut }}</td>
+            <td>{{ alerte.timestamp }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+    </div>
+    </div>
+
+
+    <div class="bloc2" style="display: flex; gap: 70px; padding: 20px;">
+
+        <div id="predictions" style="width: 50%; height: 250px; border: 2px solid rgb(79, 77, 77); background-color: #f8f9fa; border-radius: 5px;">
+            <h2>🔮 Prédictions IA : Risques de panne</h2>
+                <ul id="predictionList"></ul>
+            <script>
+            function mettreAJourPredictions() {
+                fetch("/predictions") // 📡 Demander les prédictions IA à Flask
+                    .then(response => response.json())
+                    .then(data => {
+                        var liste = document.getElementById("predictionList");
+                        liste.innerHTML = ""; // 🔄 Effacer l'ancienne liste
+                        
+                        data.forEach(pylone => {
+                            var element = document.createElement("li");
+                            element.textContent = `⚠️ ${pylone.nom} - Risque de panne élevé`;
+                            liste.appendChild(element);
+                        });
+                    });
+            }
+
+            </script>
+        </div>
+
+        <div id="map" style="width:50%; border: 2px solid gray; border-radius: 10px ;height: 250px;">
+            <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+            <script>
+                var map = L.map("map").setView([48.8566, 2.3522], 5); // 📍 Position par défaut (Paris)
+
+                // Ajouter les tuiles de fond de carte
+                L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+
+                // 📌 Liste des pylônes avec coordonnées et statut
+                var pylones = [
+                    { nom: "Pylône 1", lat: 48.8566, lon: 2.3522, statut: "🟢 En ligne" },
+                    { nom: "Pylône 2", lat: 45.7640, lon: 4.8357, statut: "🔴 Hors ligne" },
+                    { nom: "Pylône 3", lat: 50.8503, lon: 4.3517, statut: "🟢 En ligne" }
+                ];
+
+                // 📍 Ajouter les marqueurs des pylônes
+                pylones.forEach(function(pylone) {
+                    var couleur = pylone.statut.includes("En ligne") ? "green" : "red";
+                    L.marker([pylone.lat, pylone.lon])
+                        .bindPopup(`<b>${pylone.nom}</b><br>${pylone.statut}`)
+                        .addTo(map);
+                });
+            </script>
+        </div>
+    </div>    
+    <header style="background: black; margin: 0px; padding: 0px;">
+        <p>Propos</p>
+        <p>Contacts</p>
+        <p>Aide</p>
+    </header>
+</div>  
+</body>
+</html>
+<head>
