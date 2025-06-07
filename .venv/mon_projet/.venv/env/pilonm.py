@@ -16,6 +16,22 @@ from sklearn.ensemble import RandomForestClassifier
 app = Flask(__name__)
 socketio = SocketIO(app)
 
+from flask import Flask
+import os  # 💡 Importer os pour gérer les variables d'environnement
+
+app = Flask(__name__)
+
+# 🔥 Définir le port au début
+port = int(os.environ.get("PORT", 5000))  # Render définit automatiquement le port
+
+@app.route('/')
+def home():
+    return "Hello World!"
+
+# 🚀 Lancer l'application Flask
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=port)
+
 # 📡 Liste des pylônes et leurs adresses IP
 pylones = {
     "Pylône 1": "10.10.21.105",
@@ -169,6 +185,3 @@ def get_predictions():
 if __name__ == "__main__":
     threading.Thread(target=surveillance_en_temps_reel).start()
     socketio.run(app, debug=True),
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Récupère le port défini par Render
-    app.run(host="0.0.0.0", port=port)
