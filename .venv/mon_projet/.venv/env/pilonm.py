@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO
 import socket
 import time
+import os
 import threading
 import pusher
 import json
@@ -168,3 +169,6 @@ def get_predictions():
 if __name__ == "__main__":
     threading.Thread(target=surveillance_en_temps_reel).start()
     socketio.run(app, debug=True),
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))  # Récupère le port défini par Render
+    app.run(host="0.0.0.0", port=port)
