@@ -19,8 +19,6 @@ socketio = SocketIO(app)
 from flask import Flask
 import os  # 💡 Importer os pour gérer les variables d'environnement
 
-app = Flask(__name__)
-
 # 🔥 Définir le port au début
 port = int(os.environ.get("PORT", 5000))  # Render définit automatiquement le port
 
@@ -30,7 +28,7 @@ def home():
 
 # 🚀 Lancer l'application Flask
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=port)
+   app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
 
 # 📡 Liste des pylônes et leurs adresses IP
 pylones = {
