@@ -12,23 +12,29 @@ from flask import jsonify
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
+from flask_cors import CORS
+
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="*")  # Autoriser les requêtes cross-origin
 
-from flask import Flask
-import os  # 💡 Importer os pour gérer les variables d'environnement
+@app.route("/")
+def home():
+    return "Socket.io Flask Server is running!"
+
+if __name__ == "__main__":
+    socketio.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 10000)), debug=True)
 
 # 🔥 Définir le port au début
-port = int(os.environ.get("PORT", 5000))  # Render définit automatiquement le port
+port = int(os.environ.get("PORT", 10000))  # Render définit automatiquement le port
 
 @app.route('/')
 def home():
-    return "Hello World!"
+    return  render_template("index.html")
+if __name__ == "__main__":
+   app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
 
 # 🚀 Lancer l'application Flask
-if __name__ == "__main__":
-   app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
 
 # 📡 Liste des pylônes et leurs adresses IP
 pylones = {
@@ -62,7 +68,7 @@ def verifier_pylones():
     etats = {}
     for nom, ip in pylones.items():
         try:
-            socket.create_connection((ip, 80), timeout=3)
+            socket.create_connection((ip, 80), timeout=10)
             etats[nom] = "🟢 En ligne"
         except:
             etats[nom] = "🔴 Hors ligne"
@@ -183,3 +189,4 @@ def get_predictions():
 if __name__ == "__main__":
     threading.Thread(target=surveillance_en_temps_reel).start()
     socketio.run(app, debug=True),
+
