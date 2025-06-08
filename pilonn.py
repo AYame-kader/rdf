@@ -29,7 +29,7 @@ if __name__ == "__main__":
 port = int(os.environ.get("PORT", 10000))  # Render définit automatiquement le port
 
 @app.route('/')
-def home():
+def teme():
     return  render_template("index.html")
 if __name__ == "__main__":
    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
